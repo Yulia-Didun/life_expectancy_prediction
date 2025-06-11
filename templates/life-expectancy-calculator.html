@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life Expectancy Calculator</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+    <div class="mb-4">
+      <div class="flex items-center space-x-2">
+        <iconify-icon icon="lucide:heart-pulse" class="text-red-500 text-xl"></iconify-icon>
+        <h1 class="text-xl font-semibold">Life Expectancy Calculator</h1>
+      </div>
+      <p class="text-sm text-gray-500">Enter your medical and economic information to estimate life expectancy</p>
+    </div>
+    <hr class="my-4">
+
+    <form method="POST" action="/predict" id="lifeForm" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Personal Information -->
+        <div class="space-y-4">
+          <h2 class="text-lg font-medium">Personal Information</h2>
+          <div>
+            <label for="age" class="block text-sm font-medium">Age</label>
+            <input id="age" name="age" type="number" min="1" max="120" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="weight" class="block text-sm font-medium">Weight (kg)</label>
+              <input id="weight" name="weight" type="number" min="20" max="300" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+            </div>
+            <div>
+              <label for="height" class="block text-sm font-medium">Height (cm)</label>
+              <input id="height" name="height" type="number" min="50" max="250" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+            </div>
+          </div>
+          <div>
+            <label for="country" class="block text-sm font-medium">Country/Region</label>
+            <select id="country" name="country" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+              <option value="" disabled selected hidden>Select a value</option>
+              {% for country in countries %}
+                <option value="{{ country }}">{{ country }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <!-- Health Factors -->
+        <div class="space-y-4">
+          <h2 class="text-lg font-medium">Health Factors</h2>
+          <div>
+            <label for="smoking" class="block text-sm font-medium mb-1">Smoking</label>
+            <select id="smoking" name="smoking" class="block w-full border border-gray-300 rounded-md p-2">
+              <option value="none">I don't smoke</option>
+              <option value="light">Occasionally (rarely)</option>
+              <option value="regular">I smoke regularly</option>
+            </select>
+          </div>
+          <div>
+            <label for="alcohol" class="block text-sm font-medium mb-1">Alcohol Consumption  (servings per week)</label>
+              <p class="text-sm text-gray-500">1 serving ≈ 150 ml of wine (12%), 330 ml of beer (5%), or 45 ml of spirits (40%)</p>
+            <input id="alcohol" name="alcohol" type="range" min="0" max="25" step="1" value="0"
+         class="w-full" oninput="alcoholValue.textContent = this.value">
+        <div class="text-sm text-gray-600 mt-1">
+          <output id="alcoholValue">0</output> servings/week
+        </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Socio-Economic Factors -->
+      <div class="space-y-4 mt-6">
+        <h2 class="text-lg font-medium">Socio-Economic Factors</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="income" class="block text-sm font-medium">Income Level</label>
+            <select name="income" id="income" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+              <option value="">Select income level</option>
+              <option value="very_low">Very low</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="very_high">Very high</option>
+            </select>      
+          </div>
+          <div>
+            <label for="education" class="block text-sm font-medium">Education Level</label>
+            <select id="education" name="education" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+              <option value="">Select education level</option>
+              <option value="4">Primary education</option>
+              <option value="9">Lower secondary education</option>
+              <option value="11">Upper secondary education</option>
+              <option value="13">College</option>
+              <option value="15">Higher education (Bachelor’s)</option>
+              <option value="16.5">Master’s degree</option>
+              <option value="18.5">Postgraduate (PhD)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-4 mt-6">
+        <button type="reset" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded">Clear</button>
+        <button type="submit" class="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded">Calculate</button>
+      </div>
+    </form>
+    <div id="result"></div>
+
+    {% if result %}
+    <div id="resultSection" class="mt-6 p-4 bg-green-100 rounde">
+      <h2 class="text-lg font-semibold">Predicted Life Expectancy:</h2>
+      <p id="resultText" class="text-2xl text-blue-600 font-bold">{{ result }} years</p>
+    </div>
+    {% endif %}
+  </div>
+
+<script>
+document.getElementById('lifeForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const data = {
+    age: form.age.value,
+    weight: form.weight.value,
+    height: form.height.value,
+    country: form.country.value,
+    smoking: form.smoking.value,
+    alcohol: form.alcohol.value,
+    income: form.income.value,
+    education: form.education.value
+  };
+
+  try {
+    const response = await fetch('/predict', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Server error');
+    const result = await response.json();
+
+    // Формуємо query string і переходимо на сторінку результату
+    const params = new URLSearchParams({
+      predicted_life_expectancy: result.result,
+      age: data.age
+    });
+
+    console.log('Redirecting to:', '/result?' + params.toString());
+    window.location.href = '/result?' + params.toString();
+
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+});
+
+</script>
+
+</body>
+</html>

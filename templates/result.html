@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Life Expectancy Estimator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+  <main class="app">
+    <section class="result-display">
+      <div class="text-center">
+        <h2>Your Estimated Life Expectancy</h2>
+        <div class="life-expectancy">
+          <span class="years">{{ predicted_life_expectancy }}</span>
+          <span class="label">years</span>
+        </div>
+        <p>Based on your current age of {{ age }}, you have approximately {{ years_left }} years remaining.</p>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-labels">
+          <span>Current age: {{ age }}</span>
+          <span>Life expectancy: {{ predicted_life_expectancy }}</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: {{ percent_lived }}%;"></div>
+        </div>
+        <div class="progress-text">{{ percent_lived }}% of expected lifespan</div>
+      </div>
+
+      <section class="impact-section">
+        <h3>Key Factors Affecting Your Life Expectancy</h3>
+        <div class="factors-grid">
+          <div class="factor positive">
+            <h4>Regular Exercise</h4>
+            <p>Regular physical activity reduces risk of heart disease and improves overall health</p>
+          </div>
+          <div class="factor negative">
+            <h4>Smoking</h4>
+            <p>Significantly increases risk of cancer, heart disease, and respiratory conditions</p>
+          </div>
+          <!-- Add more factors as needed -->
+        </div>
+      </section>
+
+      <section class="recommendations">
+        <h3>Recommendations to Improve Life Expectancy</h3>
+        <div class="recommendation-card">
+          <div class="recommendation">
+            <span class="icon">🏃</span>
+            <div>
+              <h4>Increase Physical Activity</h4>
+              <p>Aim for at least 150 minutes of moderate exercise or 75 minutes of vigorous exercise per week.</p>
+            </div>
+          </div>
+          <div class="recommendation">
+            <span class="icon">🥗</span>
+            <div>
+              <h4>Improve Diet Quality</h4>
+              <p>Focus on a balanced diet rich in fruits, vegetables, whole grains, and lean proteins.</p>
+            </div>
+          </div>
+          <!-- Add more recommendations as needed -->
+        </div>
+      </section>
+
+      <div class="button-container">
+        <a href="/" class="button">🔁 Recalculate with Different Values</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
